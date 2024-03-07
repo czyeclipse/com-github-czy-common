@@ -19,35 +19,35 @@ public class CollectionUtils{
         return collection==null||collection.isEmpty();
     }
     public static <Input,Output> Set<Output> elementsMap(Set<Input> inputSet,Function<Input,Output> mapper){
-        if(isEmpty(inputSet)){
-            return Collections.emptySet();
-        }
-        Set<Output> outputSet=new HashSet<>(inputSet.size());
-        for(Input input:inputSet){
-            Output output=mapper.apply(input);
-            if(output!=null){
-                outputSet.add(output);
-            }
-        }
-        return outputSet;
+        return (Set<Output>)elementsMap((Collection<Input>)inputSet,mapper);
     }
 
     public static <Input,Output> List<Output> elementsMap(List<Input> inputList,Function<Input,Output> mapper){
-        if(isEmpty(inputList)){
-            return Collections.emptyList();
-        }
-        List<Output> outputList=new ArrayList<>(inputList.size());
-        for(Input input:inputList){
-            Output output=mapper.apply(input);
-            if(output!=null){
-                outputList.add(output);
-            }
-        }
-        return outputList;
+        return (List<Output>)elementsMap((Collection<Input>)inputList,mapper);
     }
 
+    public static <Input,Output> Queue<Output> elementsMap(Queue<Input> inputList,Function<Input,Output> mapper){
+        return (Queue<Output>)elementsMap((Collection<Input>)inputList,mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <Input,Output> Collection<Output> elementsMap(Collection<Input> inputCollection,Function<Input,Output> mapper){
+        if(isEmpty(inputCollection)){
+            return null;
+        }
+        Collection<Output> outputCollection=ClassUtils.newObject(inputCollection.getClass());
+        for(Input input:inputCollection){
+            Output output=mapper.apply(input);
+            if(output!=null){
+                outputCollection.add(output);
+            }
+        }
+        return outputCollection;
+    }
+
+    @SuppressWarnings("unchecked")
     public static <InputKey,InputValue,OutputKey,OutputValue> Map<OutputKey,OutputValue> keyValueMap(Map<InputKey,InputValue> map,Function<InputKey,OutputKey> keyMapper,Function<InputValue,OutputValue> valueMapper){
-        Map<OutputKey,OutputValue> resultMap=new HashMap<>();
+        Map<OutputKey,OutputValue> resultMap=ClassUtils.newObject(map.getClass());
         map.forEach((key,value)->{
             OutputKey outputKey=keyMapper.apply(key);
             if(outputKey==null){

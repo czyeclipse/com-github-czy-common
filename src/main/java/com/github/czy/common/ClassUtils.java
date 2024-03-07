@@ -23,6 +23,39 @@ import java.util.jar.JarFile;
  */
 public class ClassUtils{
 
+    public static <InputType> InputType newObject(Class<InputType> inputType,Object...params){
+        try{
+            int len=params.length;
+            if(len==0){
+                return inputType.newInstance();
+            }else{
+                Class<?>[] paramsTypes=new Class<?>[len];
+                for(int i=0;i<len;i++){
+                    if(params[i]==null){
+                        paramsTypes[i]=Object.class;
+                    }else{
+                        paramsTypes[i]=params[i].getClass();
+                    }
+                }
+                return newObject(inputType,params,paramsTypes);
+            }
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static <InputType> InputType newObject(Class<InputType> inputType,Object[] params,Class<?>[] paramTypes){
+        if(params==null||params.length==0||paramTypes==null||params.length!=paramTypes.length){
+            throw new IllegalArgumentException("invalid para");
+        }
+        try{
+            Constructor<InputType> constructor=inputType.getConstructor(paramTypes);
+            return constructor.newInstance(params);
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
 
     @SuppressWarnings({"rawtypes","unchecked"})
     public static List<FieldVo> getFieldListFromClass(Class clazz) throws Exception{
